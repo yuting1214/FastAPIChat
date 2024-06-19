@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Login Page</h1>
+
+<!-- Login form -->
+<div id="loginModal" class="modal" style="display: block;">
+  <!-- Modal content -->
+  <div class="modal-content">
+    <span class="close" onclick="document.getElementById('loginModal').style.display='none'">&times;</span>
+    {% if message %}
+    <div class="alert alert-danger">{{ message }}</div>
+    {% endif %}
+    <form action="/login" method="post" class="login-form">
+        <div class="form-group">
+            <label for="username">Username:</label><br>
+            <input type="text" id="username" name="username" class="input-field" required><br>
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label><br>
+            <input type="password" id="password" name="password" class="input-field" required><br><br>
+        </div>
+        <input type="submit" value="Login" class="submit-button">
+    </form>
+  </div>
+</div>
+{% endblock %}

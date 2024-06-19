@@ -1,0 +1,16 @@
+psycopg2-binary
+python-dotenv
+databases[asyncpg]
+databases[aiosqlite]
+fastapi
+uvicorn
+sqlalchemy
+itsdangerous
+pydantic>=2.7.0
+pydantic-settings
+gradio
+langchain>=0.2.0
+langchain_openai
+langchain_core
+langchain-community
+names-generator
