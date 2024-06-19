@@ -1,3 +1,8 @@
+# Open Containers Initiative (OCI) labels
+LABEL org.opencontainers.image.source=https://github.com/yuting1214/FastAPIChat
+LABEL org.opencontainers.image.description="Container image for FastAPIChat"
+LABEL org.opencontainers.image.licenses=MIT
+
 # Use an official Python runtime as a parent image
 FROM python:3.9-slim as builder
 
