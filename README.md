@@ -280,6 +280,8 @@ FastAPIChat/
 
 4. History Message Management: Allow user to fetch back the previous messages from database and continue the chat.
 
+5. Rate Limiter: Integrate rate limiter for API protection.
+
 ## Contributing 🤝
 We welcome contributions from the community! Whether it's bug fixes, feature enhancements, or documentation improvements, feel free to open a pull request.
 
