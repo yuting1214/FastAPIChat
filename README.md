@@ -18,6 +18,8 @@ FastAPIChat is a powerful application for testing and evaluating large language 
 - FastAPIChat powers [LLM Arena](https://gradioapp-production.up.railway.app/arena/), serving over 10+ LLMs, for diverse and dynamic chatbot interactions
 - FastAPIChat enables seamlessly rate [LLM](https://gradioapp-production.up.railway.app/chatbot/) generated responses, ensuring continuous improvement based on user feedback.
 
+![Demo of FastAPIChat](https://github.com/yuting1214/FastAPIChat/blob/main/materials/demo.gif)
+
 ## News
 - [2024/06] 🔥 We released FastAPIChat v1.0.0
 
