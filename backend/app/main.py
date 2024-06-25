@@ -8,7 +8,7 @@ from fastapi.responses import RedirectResponse
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-from backend.app.core.init_settings import args, global_settings
+from backend.app.core.init_settings import args
 from backend.app.core.constants import API_BASE_URL
 from backend.app.api.v1.endpoints import (
     user,
@@ -54,7 +54,7 @@ app.mount("/static", StaticFiles(directory="frontend/login/static"), name="stati
 # Set Middleware
 # Define the allowed origins
 origins = [
-    global_settings.API_BASE_URL,
+    API_BASE_URL,
     "http://localhost",
     "http://localhost:5000",
 ]

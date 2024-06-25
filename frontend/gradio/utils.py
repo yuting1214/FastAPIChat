@@ -1,9 +1,8 @@
-# Reference: https://github.com/lm-sys/FastChat/fastchat/serve/gradio_web_server.py
 from typing import List, Dict, Optional, Tuple, Any
 import aiohttp
 import requests
 import gradio as gr
-from backend.app.core.constants import API_BASE_URL
+from urllib.parse import urljoin
 from backend.app.core.constants import (
     API_BASE_URL,
     TEXT_API_QUOTA_LIMIT
@@ -23,7 +22,8 @@ def get_client_ip(request: gr.Request) -> str:
 def fetch_available_models(llm_type: str) -> Dict[str, str]:
     """Fetch available large language models from the base API URL."""
     models = {}
-    response = requests.get(API_BASE_URL + f"api/v1/llms/type/{llm_type}")
+    url = urljoin(API_BASE_URL, f"api/v1/llms/type/{llm_type}")
+    response = requests.get(url)
     assert response.status_code == 200
     model_info = response.json()
 
@@ -33,25 +33,24 @@ def fetch_available_models(llm_type: str) -> Dict[str, str]:
     return models
 
 async def start_chat(user_id: str, mode: str) -> str:
-    chat_api_endpoint = API_BASE_URL + "api/v1/chats/async"
+    url = urljoin(API_BASE_URL, "api/v1/chats/async")
     chat_data = {"user_id": user_id, "mode": mode}
 
     async with aiohttp.ClientSession() as session:
-        async with session.post(chat_api_endpoint, json=chat_data) as response:
+        async with session.post(url, json=chat_data) as response:
             assert response.status == 200
             data = await response.json()
             return data["id"]
 
-
 async def add_message_to_db(session: aiohttp.ClientSession, chat_id: str, content: str, message_type: str, origin: str):
-    message_api_endpoint = API_BASE_URL + "api/v1/messages/async"
+    url = urljoin(API_BASE_URL, "api/v1/messages/async")
     message_data = {
         "chat_id": chat_id,
         "content": content,
         "message_type": message_type,
         "origin": origin
     }
-    async with session.post(message_api_endpoint, json=message_data) as message_response:
+    async with session.post(url, json=message_data) as message_response:
         assert message_response.status == 200
 
 def load_terms_of_use_js() -> str:
@@ -118,13 +117,13 @@ def load_demo(url_params: gr.JSON, request: gr.Request) -> Tuple[Optional[Dict[s
     client_ip = get_client_ip(request)
 
     # Check if the client is first time user
-    user_ip_api_endpoint = base_api_url + f"api/v1/users/ip/{client_ip}"
+    user_ip_api_endpoint = urljoin(base_api_url, f"api/v1/users/ip/{client_ip}")
     user_ip_response = requests.get(user_ip_api_endpoint)
     first_time_user = user_ip_response.status_code != 200
 
     if first_time_user:
         # Create User Profile based on IP address
-        user_api_endpoint = base_api_url + "api/v1/users/"
+        user_api_endpoint = urljoin(base_api_url, "api/v1/users/")
         user_data = {"ip_address": client_ip}
         user_response = requests.post(user_api_endpoint, json=user_data)
         user_response.raise_for_status()
@@ -132,7 +131,7 @@ def load_demo(url_params: gr.JSON, request: gr.Request) -> Tuple[Optional[Dict[s
         user_name = user_response.json()["name"]
 
         # Create a new Quota(Text and Image API) for a the new user
-        quota_api_endpoint = base_api_url + "api/v1/quotas/"
+        quota_api_endpoint = urljoin(base_api_url, "api/v1/quotas/")
         for llm_model_type in api_quota_map:
             quota_limit, resource, _, _ = api_quota_map[llm_model_type]
             quota_data = {"users": [{"id": user_id}], "quota_limit": quota_limit, "resource": resource}
@@ -162,7 +161,7 @@ def load_demo(url_params: gr.JSON, request: gr.Request) -> Tuple[Optional[Dict[s
         * See more in the [Gradio](https://www.gradio.app/) 📖
 
         ## 👇 Choose any models for {task}:
-    """.format(user_name = user_name, task = task)
+    """.format(user_name=user_name, task=task)
 
     markdown_update = gr.Markdown(notice_markdown)
     state = gr.State({
@@ -174,10 +173,9 @@ def load_demo(url_params: gr.JSON, request: gr.Request) -> Tuple[Optional[Dict[s
         "history": []
     })
     if is_arena_ui:
-        model_1_dropdown_update = gr.Dropdown(label= 'LLM', choices=model_names, value=selected_model_1, visible=True, show_label=False)
-        model_2_dropdown_update = gr.Dropdown(label= 'LLM', choices=model_names, value=selected_model_2, visible=True, show_label=False)
+        model_1_dropdown_update = gr.Dropdown(label='LLM', choices=model_names, value=selected_model_1, visible=True, show_label=False)
+        model_2_dropdown_update = gr.Dropdown(label='LLM', choices=model_names, value=selected_model_2, visible=True, show_label=False)
         return state, markdown_update, model_1_dropdown_update, model_2_dropdown_update
     else:
-        model_dropdown_update = gr.Dropdown(label= 'LLM', choices=model_names, value=selected_model_1, visible=True)
+        model_dropdown_update = gr.Dropdown(label='LLM', choices=model_names, value=selected_model_1, visible=True)
         return state, markdown_update, model_dropdown_update
-

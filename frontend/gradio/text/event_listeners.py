@@ -4,6 +4,7 @@ import requests
 import time
 import gradio as gr
 import json
+from urllib.parse import urljoin
 from typing import List, Optional, Tuple
 from backend.app.core.constants import API_BASE_URL, MEMORY_WINDOW_SIZE
 from frontend.gradio.utils import add_message_to_db, start_chat
@@ -60,7 +61,7 @@ def enable_vote_buttons_arena():
 def add_rating_to_db(state: gr.State, rating_type: str):
     chat_id = state.value['current_chat_id']
     if chat_id:
-        rating_api_endpoint = API_BASE_URL + "api/v1/ratings/"
+        rating_api_endpoint = urljoin(API_BASE_URL, "api/v1/ratings/")
         rating_data = {
             "chat_id": chat_id,
             "rating_type": rating_type
@@ -106,7 +107,7 @@ def llm_text_completion_stream(state: gr.State, model_name: str, history: List[T
     model_endpoint = state.value['model_map'][model_name]
 
     # Call the LLM model with streaming
-    llm_api_endpoint = API_BASE_URL + "api/v1/llm/generation/stream/text"
+    llm_api_endpoint = urljoin(API_BASE_URL, "api/v1/llm/generation/stream/text")
     llm_data = {
         "user_id": user_id,
         "api_endpoint": model_endpoint,
@@ -139,7 +140,7 @@ def llm_text_completion_stream(state: gr.State, model_name: str, history: List[T
                 time.sleep(0.01)  # Control the streaming speed for the interface
 
     # Add Message data(user) into DB
-    message_api_endpoint = API_BASE_URL + "api/v1/messages/"
+    message_api_endpoint = urljoin(API_BASE_URL, "api/v1/messages/")
     message_data_user = {
         "user_id": user_id,
         "content": user_message,
@@ -182,7 +183,7 @@ async def llm_text_completion_stream_async(
     state.value['current_chat_id'] = chat_id
 
     # Call the LLM model with streaming
-    llm_api_endpoint = API_BASE_URL + "api/v1/llm/generation/stream/text"
+    llm_api_endpoint = urljoin(API_BASE_URL, "api/v1/llm/generation/stream/text")
     llm_params = {
         "system_prompt": system_prompt,
         "temperature": temperature,
@@ -243,7 +244,7 @@ async def llm_text_completion_memory_stream_async(
     state.value['current_chat_id'] = chat_id
 
     # Call the LLM model with streaming
-    llm_api_endpoint = API_BASE_URL + "api/v1/llm/generation/stream/text/memory"
+    llm_api_endpoint = urljoin(API_BASE_URL, "api/v1/llm/generation/stream/text/memory")
     llm_params = {
         "system_prompt": system_prompt,
         "temperature": temperature,
@@ -310,7 +311,7 @@ async def llm_text_completion_stream_arena(
     state.value['current_chat_id'] = chat_id
 
     # Call the LLM model with streaming
-    llm_api_endpoint = API_BASE_URL + "api/v1/llm/generation/stream/text"
+    llm_api_endpoint = urljoin(API_BASE_URL, "api/v1/llm/generation/stream/text")
     llm_params_1 = {
         "system_prompt": system_prompt_1,
         "temperature": temperature_1,
@@ -401,7 +402,7 @@ async def llm_text_completion_memory_stream_arena(
     state.value['current_chat_id'] = chat_id
 
     # Call the LLM model with streaming
-    llm_api_endpoint = API_BASE_URL + "api/v1/llm/generation/stream/text/memory"
+    llm_api_endpoint = urljoin(API_BASE_URL, "api/v1/llm/generation/stream/text/memory")
     llm_params_1 = {
         "system_prompt": system_prompt_1,
         "temperature": temperature_1,
