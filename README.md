@@ -167,6 +167,9 @@ Third-Party Services: Integrate with third-party APIs for enhanced functionality
 
 * Project Details: [Heptabase](https://app.heptabase.com/w/80fcc9a0476f3a3ac30ac895c36eef51ede0bc4aa090cb7be1c6c0ed507cfda9)
 
+<details>
+<summary>More Project Details</summary>
+
 ```
 FastAPIChat/
 ├── backend/                      # Backend directory for the FastAPI application
@@ -269,8 +272,8 @@ FastAPIChat/
 ├── requirements.txt              # Python dependencies file
 ├── Dockerfile                    # Docker configuration
 ├── README.md                     # Project README file
-
 ```
+</details>
 
 ## Future Direction 📝
 
