@@ -9,11 +9,11 @@ from backend.app.core.init_settings import global_settings as settings
 Base = declarative_base()
 
 # Synchronous engine and session
-sync_engine = create_engine(settings.DB_URL())
+sync_engine = create_engine(settings.DB_URL)
 SyncSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=sync_engine)
 
 # Asynchronous engine and session
-async_engine = create_async_engine(settings.ASYNC_DB_URL(), echo=False, future=True)
+async_engine = create_async_engine(settings.ASYNC_DB_URL, echo=False, future=True)
 AsyncSessionLocal = sessionmaker(bind=async_engine, expire_on_commit=False, class_=AsyncSession)
 
 def get_sync_db():

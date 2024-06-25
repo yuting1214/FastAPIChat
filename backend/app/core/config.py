@@ -3,44 +3,53 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     # Application settings
-    APP_NAME: str = "My LLM App"
-    APP_VERSION: str = "1.0.0"
+    APP_NAME: str = "My App"
+    APP_VERSION: str = "0.1.0"
 
     # Username and Password for login
     USER_NAME: str = os.getenv('USER_NAME', '')
     PASSWORD: str = os.getenv('PASSWORD', '')
 
-    # API KEY
-    OPENROUTER_API_KEY: str = os.getenv('OPENROUTER_API_KEY', '')
-
+    @property
     def DB_URL(self):
         if self.ENV_MODE == "dev":
             return self.DEV_DB_URL
-        return '{}://{}:{}@{}:{}/{}'.format(
-            self.DB_ENGINE,
-            self.DB_USERNAME,
-            self.DB_PASS,
-            self.DB_HOST,
-            self.DB_PORT,
-            self.DB_NAME
-        )
+        else:
+            if self.DATABASE_URL:
+                return self.DATABASE_URL
+            else:
+                return '{}://{}:{}@{}:{}/{}'.format(
+                    self.DB_ENGINE,
+                    self.DB_USERNAME,
+                    self.DB_PASS,
+                    self.DB_HOST,
+                    self.DB_PORT,
+                    self.DB_NAME
+                )
 
+    @property
     def ASYNC_DB_URL(self):
         if self.ENV_MODE == "dev":
             return "sqlite+aiosqlite:///./dev.db"
-        return '{}+asyncpg://{}:{}@{}:{}/{}'.format(
-            self.DB_ENGINE,
-            self.DB_USERNAME,
-            self.DB_PASS,
-            self.DB_HOST,
-            self.DB_PORT,
-            self.DB_NAME
-        )
-    
-    def Get_API_BASE_URL(self):
+        else:
+            if self.DATABASE_URL:
+                URL_split = self.DATABASE_URL.split("://")
+                return f"{URL_split[0]}+asyncpg://{URL_split[1]}"
+            else:
+                return '{}+asyncpg://{}:{}@{}:{}/{}'.format(
+                    self.DB_ENGINE,
+                    self.DB_USERNAME,
+                    self.DB_PASS,
+                    self.DB_HOST,
+                    self.DB_PORT,
+                    self.DB_NAME
+                )
+
+    @property
+    def API_BASE_URL(self) -> str:
         if self.ENV_MODE == "dev":
-            self.API_BASE_URL = 'http://localhost:5000/'
-        return self.API_BASE_URL
+            return 'http://localhost:5000/'
+        return self.HOST_URL
 
 class DevSettings(Settings):
     # Environment mode: 'dev' or 'prod'
@@ -63,8 +72,11 @@ class ProdSettings(Settings):
     DB_PORT: str = os.getenv('DB_PORT', '')
     DB_NAME: str = os.getenv('DB_NAME', '')
 
-    # Define API_BASE_URL based on environment mode
-    API_BASE_URL: str = os.getenv('API_BASE_URL', '')
+    # Extra Database settings for deploying on Railway; if you provide DATABASE_URL, the above settings will be ignored
+    DATABASE_URL: str = os.getenv('DATABASE_URL', '')
+
+    # Define HOST_URL based on environment mode
+    HOST_URL : str = os.getenv('HOST_URL ', '')
 
     # Database settings for production
     model_config = SettingsConfigDict(env_file=".env", extra='allow')
